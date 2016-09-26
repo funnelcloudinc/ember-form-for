@@ -1,7 +1,7 @@
 import Ember from 'ember';
-import layout from '../../templates/components/form-fields/radio-field';
+import layout from '../../../templates/components/form-fields/checkbox-group/option';
 
-import { humanize } from '../../utils/strings';
+import { humanize } from '../../../utils/strings';
 
 const {
   String: { dasherize },
@@ -9,26 +9,19 @@ const {
   computed: { or },
   get,
   inject: { service },
-  isPresent,
-  set
+  isPresent
 } = Ember;
 
-const RadioFieldComponent = Ember.Component.extend({
+export default Ember.Component.extend({
   tagName: '',
   layout,
-
-  control: 'one-way-radio',
 
   i18n: service(),
   config: service('ember-form-for/config'),
 
   modelName: or('object.modelName', 'object.constructor.modelName'),
 
-  update(object, propertyName, value) {
-    set(object, propertyName, value);
-  },
-
-  labelText: computed('value', 'label', function() {
+  labelText: computed('value', 'label', 'labelI18nKey', function() {
     let i18n = get(this, 'i18n');
     let label = get(this, 'label');
 
@@ -57,9 +50,3 @@ const RadioFieldComponent = Ember.Component.extend({
      .join('.');
   })
 });
-
-RadioFieldComponent.reopenClass({
-  positionalParams: ['propertyName', 'value']
-});
-
-export default RadioFieldComponent;
