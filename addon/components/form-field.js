@@ -121,7 +121,7 @@ const FormFieldComponent = Component.extend({
   describedByValue: computed('hint', 'errors.[]', 'fieldId', function() {
     let ids = [];
     let hint = get(this, 'hint');
-    let errors = get(this, 'errors');
+    let errors = get(this, 'errors.validation');
     let fieldId = get(this, 'fieldId');
 
     if (isPresent(hint)) {
