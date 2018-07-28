@@ -1,36 +1,44 @@
 {{#form-field propertyName
-    class="select-field"
+    class="hidden-field"
     classNames=fieldClasses
     errorClasses=errorClasses
     hintClasses=hintClasses
     inputClasses=inputClasses
     labelClasses=labelClasses
+    serializeValue=serializeValue
+    deserializeValue=deserializeValue
     object=object
     hint=hint
     form=form
     label=label
     control=control
     update=(action update) as |f|}}
-  {{f.label required=required}}
   {{f.control
+      accept=accept
       accesskey=accesskey
+      autocomplete=autocomplete
       autofocus=autofocus
+      autosave=autosave
       dir=dir
       disabled=disabled
-      groupLabelPath=groupLabelPath
       hidden=hidden
-      includeBlank=includeBlank
-      prompt=prompt
-      promptIsSelectable=promptIsSelectable
+      inputmode=inputmode
       lang=lang
+      list=list
+      max=max
+      maxlength=maxlength
+      min=min
+      minlength=minlength
       multiple=multiple
-      options=options
-      optionValuePath=optionValuePath
-      optionTargetPath=optionTargetPath
-      optionLabelPath=optionLabelPath
+      pattern=pattern
+      placeholder=placeholder
+      readonly=readonly
       required=required
-      search=search
+      size=size
+      spellcheck=spellcheck
+      step=step
       tabindex=tabindex
+      title=title
   }}
   {{f.errors}}
   {{f.hint}}

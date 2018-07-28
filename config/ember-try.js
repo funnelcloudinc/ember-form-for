@@ -1,30 +1,45 @@
-/*jshint node:true*/
+/* jshint node:true*/
 module.exports = {
+  useYarn: true,
   scenarios: [
     {
       name: 'ember-2.3',
       bower: {
         dependencies: {
-          "ember": "~2.3.0"
+          'ember': '~2.3.0'
         }
       }
     },
     {
-      name: 'ember-lts',
+      name: 'ember-lts-2.4',
       bower: {
         dependencies: {
-          "ember": "~2.4.0"
-        }
-      }
-    },
-    {
-      name: 'ember-latest',
-      bower: {
-        dependencies: {
-          "ember": "release"
+          'ember': 'components/ember#lts-2-4'
         },
         resolutions: {
-          "ember": "release"
+          'ember': 'lts-2-4'
+        }
+      }
+    },
+    {
+      name: 'ember-lts-2.8',
+      bower: {
+        dependencies: {
+          'ember': 'components/ember#lts-2-8'
+        },
+        resolutions: {
+          'ember': 'lts-2-8'
+        }
+      }
+    },
+    {
+      name: 'ember-release',
+      bower: {
+        dependencies: {
+          'ember': 'components/ember#release'
+        },
+        resolutions: {
+          'ember': 'release'
         }
       }
     },
@@ -33,10 +48,10 @@ module.exports = {
       allowedToFail: true,
       bower: {
         dependencies: {
-          "ember": "beta"
+          'ember': 'components/ember#beta'
         },
         resolutions: {
-          "ember": "beta"
+          'ember': 'beta'
         }
       }
     },
@@ -45,22 +60,10 @@ module.exports = {
       allowedToFail: true,
       bower: {
         dependencies: {
-          "ember": "canary"
+          'ember': 'components/ember#canary'
         },
         resolutions: {
-          "ember": "canary"
-        }
-      }
-    },
-    {
-      name: 'ember-alpha',
-      allowedToFail: true,
-      bower: {
-        dependencies: {
-          "ember": "alpha"
-        },
-        resolutions: {
-          "ember": "alpha"
+          'ember': 'canary'
         }
       }
     }

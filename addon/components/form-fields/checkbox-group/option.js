@@ -4,6 +4,7 @@ import layout from '../../../templates/components/form-fields/checkbox-group/opt
 import { humanize } from '../../../utils/strings';
 
 const {
+  Component,
   String: { dasherize },
   computed,
   computed: { or },
@@ -12,16 +13,15 @@ const {
   isPresent
 } = Ember;
 
-export default Ember.Component.extend({
+export default Component.extend({
   tagName: '',
   layout,
 
-  i18n: service(),
   config: service('ember-form-for/config'),
 
   modelName: or('object.modelName', 'object.constructor.modelName'),
 
-  labelText: computed('value', 'label', 'labelI18nKey', function() {
+  labelText: computed('value', 'label', 'labelI18nKey', 'i18n.locale', function() {
     let i18n = get(this, 'i18n');
     let label = get(this, 'label');
 
@@ -47,6 +47,6 @@ export default Ember.Component.extend({
       dasherize(get(this, 'propertyName') || ''),
       value
     ].filter((x) => !!x)
-     .join('.');
+      .join('.');
   })
 });

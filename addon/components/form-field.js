@@ -4,6 +4,8 @@ import layout from '../templates/components/form-field';
 import { humanize } from '../utils/strings';
 
 const {
+  Component,
+  String: { dasherize },
   assert,
   computed,
   computed: { notEmpty, or, reads },
@@ -11,22 +13,31 @@ const {
   getWithDefault,
   guidFor,
   inject: { service },
+  isEmpty,
   isPresent,
   mixin,
   observer,
-  set,
-  Component,
-  String: { dasherize }
+  set
 } = Ember;
 
 const FormFieldComponent = Component.extend({
   layout,
 
-  i18n: service(),
   config: service('ember-form-for/config'),
 
   _defaultErrorsProperty: 'errors',
   errorsProperty: or('config.errorsProperty', '_defaultErrorsProperty'),
+
+  errorsPath(propertyName) {
+    let errorsPath = this.get('config.errorsPath');
+    let errorsProperty = this.get('errorsProperty');
+
+    if (!isPresent(errorsPath)) {
+      errorsPath = `${errorsProperty}.PROPERTY_NAME`;
+    }
+
+    return errorsPath.replace('PROPERTY_NAME', propertyName);
+  },
 
   classNameBindings: [],
 
@@ -43,19 +54,11 @@ const FormFieldComponent = Component.extend({
     this._super(...arguments);
 
     let fieldClasses = get(this, 'config.fieldClasses');
-    let classNames = get(this, 'classNames');
-    set(this, 'classNames', (classNames || []).concat(fieldClasses));
 
-    get(this, 'classNameBindings').push(`hasErrors:${get(this, 'config.fieldHasErrorClasses')}`);
+    this.classNames = this.classNames.concat(fieldClasses);
 
-    [
-      'inputClasses',
-      'labelClasses',
-      'hintClasses',
-      'errorClasses'
-    ].forEach((type) => {
-      set(this, type, (get(this, type) || []).concat(get(this, `config.${type}`)));
-    });
+    this.classNameBindings = this.classNameBindings.slice();
+    this.classNameBindings.push(`hasErrors:${get(this, 'config.fieldHasErrorClasses')}`);
 
     this.propertyNameDidChange();
   },
@@ -63,23 +66,33 @@ const FormFieldComponent = Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    assert(`{{form-field}} requires an object property to be passed in`,
-           get(this, 'object') != null);
+    ['inputClasses', 'labelClasses', 'hintClasses', 'errorClasses'].forEach(
+      (type) => {
+        set(
+          this,
+          `_${type}`,
+          (get(this, type) || []).concat(get(this, `config.${type}`))
+        );
+      }
+    );
 
-    assert(`{{form-field}} requires the propertyName property to be set`,
-           typeof get(this, 'propertyName') === 'string');
+    assert('{{form-field}} requires an object property to be passed in',
+      get(this, 'object') != null);
 
-    set(this, 'modelName', getWithDefault(this, 'object.modelName', get(this, 'object.constructor.modelName')));
+    assert('{{form-field}} requires the propertyName property to be set',
+      typeof get(this, 'propertyName') === 'string');
+
+    set(this, 'modelName', this.getModelName());
   },
 
   propertyNameDidChange: observer('propertyName', 'errorsProperty', function() {
     let propertyName = get(this, 'propertyName');
-    let errorsProperty = get(this, 'errorsProperty');
+    let errorsPath = `object.${this.errorsPath(propertyName)}`;
 
     mixin(this, {
       rawValue: reads(`object.${propertyName}`),
-      errors: reads(`object.${errorsProperty}.${propertyName}`),
-      hasErrors: notEmpty(`object.${errorsProperty}.${propertyName}`)
+      errors: reads(errorsPath),
+      hasErrors: notEmpty(errorsPath)
     });
   }),
 
@@ -87,7 +100,7 @@ const FormFieldComponent = Component.extend({
     set(object, propertyName, value);
   },
 
-  labelText: computed('propertyName', 'label', function() {
+  labelText: computed('propertyName', 'label', 'i18n.locale', function() {
     let i18n = get(this, 'i18n');
     let label = get(this, 'label');
 
@@ -106,7 +119,7 @@ const FormFieldComponent = Component.extend({
       dasherize(get(this, 'modelName') || ''),
       dasherize(get(this, 'propertyName') || '')
     ].filter((x) => !!x)
-     .join('.');
+      .join('.');
   }),
 
   fieldId: computed('object', 'form', 'propertyName', function() {
@@ -134,12 +147,20 @@ const FormFieldComponent = Component.extend({
       });
     }
 
-    return ids.join(' ');
+    return isEmpty(ids) ? null : ids.join(' ');
   }),
 
   _nameForObject() {
-    return get(this, 'modelName') ||
-           guidFor(get(this, 'object'));
+    return get(this, 'modelName') || guidFor(get(this, 'object'));
+  },
+
+  getModelName() {
+    let formName = get(this, 'form');
+    let modelName = get(this, 'object.modelName');
+    let constructorName = get(this, 'object.constructor.modelName');
+    let changesetConstructorName = get(this, 'object._content.constructor.modelName');
+
+    return formName || modelName || constructorName || changesetConstructorName;
   },
 
   value: computed('rawValue', function() {

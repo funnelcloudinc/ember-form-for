@@ -4,6 +4,7 @@ import layout from '../../templates/components/form-fields/radio-field';
 import { humanize } from '../../utils/strings';
 
 const {
+  Component,
   String: { dasherize },
   computed,
   computed: { or },
@@ -13,13 +14,12 @@ const {
   set
 } = Ember;
 
-const RadioFieldComponent = Ember.Component.extend({
+const RadioFieldComponent = Component.extend({
   tagName: '',
   layout,
 
   control: 'one-way-radio',
 
-  i18n: service(),
   config: service('ember-form-for/config'),
 
   modelName: or('object.modelName', 'object.constructor.modelName'),
@@ -28,7 +28,7 @@ const RadioFieldComponent = Ember.Component.extend({
     set(object, propertyName, value);
   },
 
-  labelText: computed('value', 'label', function() {
+  labelText: computed('value', 'label', 'i18n.locale', function() {
     let i18n = get(this, 'i18n');
     let label = get(this, 'label');
 
@@ -54,7 +54,7 @@ const RadioFieldComponent = Ember.Component.extend({
       dasherize(get(this, 'propertyName') || ''),
       value
     ].filter((x) => !!x)
-     .join('.');
+      .join('.');
   })
 });
 

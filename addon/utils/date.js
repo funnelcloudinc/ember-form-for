@@ -13,8 +13,7 @@ export const toWeekString = (date) => {
   date.setHours(0, 0, 0);
   date.setDate(date.getDate() + 4 - (date.getDay() || 7));
 
-  let weekNumber =
-    ceil((((date - new Date(date.getFullYear(), 0, 1)) / 8.64e7) + 1) / 7);
+  let weekNumber = ceil((((date - new Date(date.getFullYear(), 0, 1)) / 8.64e7) + 1) / 7);
 
   return `${date.getFullYear()}-W${weekNumber}`;
 };
@@ -34,7 +33,7 @@ export const fromWeekString = (string) => {
 };
 
 export const toDateString = (date) =>
-   `${toMonthString(date)}-${pad(date.getDate())}`;
+  `${toMonthString(date)}-${pad(date.getDate())}`;
 
 export const toTimeString = (date) =>
   `${pad(date.getHours())}:${pad(date.getMinutes())}`;

@@ -10,8 +10,8 @@ This Ember.js addon will give you an easy way to build good forms:
   * Automatically adds labels, hints and errors to the form controls
   * Is built with data down - actions up in mind
   * Standard markup has built-in accessibility support
-  * Compatible with [`ember-changeset`](https://github.com/DockYard/ember-changeset)
-  * Compatible with [`ember-i18n`](https://github.com/jamesarosen/ember-i18n)
+  * Compatible with [`ember-changeset`](https://github.com/DockYard/ember-changeset) (see [instructions](#ember-changeset))
+  * Compatible with [`ember-i18n`](https://github.com/jamesarosen/ember-i18n) (see [instructions](#i18n))
 
 __WARNING__: This addon uses __contextual helpers__ and is therefore only
 compatible with apps built with Ember.js version __2.3__ and up.
@@ -139,6 +139,8 @@ update the property on the object with the new value.
 
 This action is called when a submit button is clicked. It will pass the object
 as first argument. By default it will call the `save` function on the object.
+This action also supports returning a promise, which the `{{f.submit}}` component,
+which uses [ember-async-button], will handle to show different states.
 
 #### reset
 
@@ -158,7 +160,6 @@ The default form controls are:
  - checkbox-field
  - color-field
  - date-field
- - datetime-field
  - datetime-local-field
  - email-field
  - file-field
@@ -170,6 +171,7 @@ The default form controls are:
  - radio-group
  - range-field
  - search-field
+ - select-field
  - tel-field
  - text-field
  - textarea-field
@@ -182,7 +184,7 @@ Additionally these buttons are also available:
 
  - button
  - reset
- - submit
+ - submit (uses [ember-async-button] so supports those options as well).
 
 ## form-fields
 
@@ -236,11 +238,11 @@ Ember Form For has out of the box support for
 this addon installed, it will automatically lookup the translation with the
 following key algorithm:
 
-  - By default it will use `propertyName` as key. (e.g. `'firstName'`).
+  - By default it will use `property-name` as key. (e.g. `'first-name'`).
   - If `modelName` is set, or deducable from the object, then it will be
-    prefixed to the key. (e.g. `'user.firstName'`)
+    prefixed to the key. (e.g. `'user.first-name'`)
   - If `i18nKeyPrefix` is set on the config, then this will be prefixed before
-    `modelName` and `propertyName`. (e.g. `'my.arbitrary.key.user.firstName'`)
+    `modelName` and `propertyName`. (e.g. `'my.arbitrary.key.user.first-name'`)
 
 ### Polyfilling i18n
 
@@ -271,7 +273,7 @@ the following thing in your `config/environment.js` file:
 module.exports = function(environment) {
   var ENV = {
     'ember-form-for': {
-      'errorsProperty': 'error'
+      errorsPath: 'error.PROPERTY_NAME.validation',
     }
   };
 
@@ -279,5 +281,10 @@ module.exports = function(environment) {
 };
 ```
 
-This is because ember-changeset stores it's errors on the `error` property,
+This is because ember-changeset stores it's errors on the `error.PROPERTY_NAME.validation` property,
 while Ember Form For expects them (by default) to be on the `errors` property.
+
+For those still using the old configuration of setting `errorsProperty`, this method will still work.
+However, if both are defined then `errorsPath` will take precedence.
+
+[ember-async-button]: https://github.com/DockYard/ember-async-button
